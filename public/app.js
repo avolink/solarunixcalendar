@@ -88,9 +88,7 @@ class SolarCalendar {
         });
         
         this.createDayCell(365, 365);
-        if (this.isLeapYear(this.year)) {
-          this.createDayCell(366, 366);
-        }
+        this.createDayCell(366, 366);
         
         this.renderLeapTimeline();
       }
@@ -114,7 +112,12 @@ class SolarCalendar {
     const displayNum = document.createElement('div');
     displayNum.className = 'day-num';
     displayNum.textContent = solarDay;
-    if (solarDay === 366) displayNum.classList.add('leap-day-highlight');
+    if (solarDay === 366) {
+      displayNum.classList.add('leap-day-highlight');
+      if (!this.isLeapYear(this.year)) {
+        cell.classList.add('non-leap-inactive');
+      }
+    }
     cell.appendChild(displayNum);
     
     const yearDoy = document.createElement('div');
@@ -140,7 +143,7 @@ class SolarCalendar {
     
     const format = (gregY) => {
       const slxY = gregY - 1970;
-      return `${slxY}(${gregY})`;
+      return `SLX-${slxY}(G-${gregY})`;
     };
     
     const prevSpan = document.createElement('span');

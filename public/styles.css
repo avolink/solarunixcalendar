@@ -203,6 +203,11 @@ header {
 .day-num.leap-day-highlight {
   color: #ff3b30;
   font-weight: 500;
+  text-shadow: 0 0 15px rgba(255, 59, 48, 0.2);
+}
+
+.day-cell.non-leap-inactive {
+  opacity: 0.3;
 }
 
 .leap-timeline {
