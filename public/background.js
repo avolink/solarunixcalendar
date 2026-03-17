@@ -6,8 +6,8 @@ class SolarBackground {
     this.planets = [
       { name: 'Mercury', relativeOrbit: 0.15, size: 2, speed: 0.04, angle: Math.random() * Math.PI * 2, color: '#444' },
       { name: 'Venus', relativeOrbit: 0.3, size: 4, speed: 0.015, angle: Math.random() * Math.PI * 2, color: '#666' },
-      { name: 'Earth', relativeOrbit: 0.5, size: 5, speed: 0.01, angle: -Math.PI / 2, color: '#ffffff', draggable: true },
-      { name: 'Mars', relativeOrbit: 0.65, size: 3, speed: 0.008, angle: Math.random() * Math.PI * 2, color: '#444' }
+      { name: 'Earth', relativeOrbit: 0.48, size: 5, speed: 0.01, angle: -Math.PI / 2, color: '#ffffff', draggable: true },
+      { name: 'Mars', relativeOrbit: 0.6, size: 3, speed: 0.008, angle: Math.random() * Math.PI * 2, color: '#444' }
     ];
     
     this.dragTarget = null;
@@ -36,19 +36,25 @@ class SolarBackground {
   }
 
   resize() {
-    this.canvas.width = this.canvas.clientWidth || window.innerWidth;
-    this.canvas.height = this.canvas.clientHeight || (window.innerWidth > 1024 ? window.innerHeight : window.innerWidth * 0.95);
-    this.centerX = this.canvas.width / 2;
-    this.centerY = this.canvas.height / 2;
+    const dpr = window.devicePixelRatio || 1;
+    const rect = this.canvas.getBoundingClientRect();
     
-    // 1.5x zoom factor for mobile/tablets
+    // Physical resolution
+    this.canvas.width = rect.width * dpr;
+    this.canvas.height = rect.height * dpr;
+    
+    // Logic resolution (for drawing)
+    this.ctx.scale(dpr, dpr);
+    
+    this.centerX = rect.width / 2;
+    this.centerY = rect.height / 2;
+    
+    // Zoom factor
     this.scaleFactor = window.innerWidth > 1024 ? 1.0 : 1.5;
     
-    // We base everything on the smaller dimension to prevent overflow
+    // Max radius (fill screen almost completely)
     const margin = 5;
-    const minDim = Math.min(this.canvas.width, this.canvas.height);
-    this.baseRadius = (minDim / 2 - margin) * 1.0; 
-    // The scaleFactor is applied to individual elements and orbits below
+    this.baseRadius = (Math.min(this.centerX, this.centerY) - margin);
   }
 
   getXY(e) {
