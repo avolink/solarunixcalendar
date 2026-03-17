@@ -4,10 +4,10 @@ class SolarBackground {
     this.ctx = this.canvas.getContext('2d');
     
     this.planets = [
-      { name: 'Mercury', orbit: 70, size: 2, speed: 0.04, angle: Math.random() * Math.PI * 2, color: '#444' },
-      { name: 'Venus', orbit: 110, size: 4, speed: 0.015, angle: Math.random() * Math.PI * 2, color: '#666' },
-      { name: 'Earth', orbit: 160, size: 5, speed: 0.01, angle: -Math.PI / 2, color: '#ffffff', draggable: true },
-      { name: 'Mars', orbit: 220, size: 3, speed: 0.008, angle: Math.random() * Math.PI * 2, color: '#444' }
+      { name: 'Mercury', relativeOrbit: 0.15, size: 2, speed: 0.04, angle: Math.random() * Math.PI * 2, color: '#444' },
+      { name: 'Venus', relativeOrbit: 0.3, size: 4, speed: 0.015, angle: Math.random() * Math.PI * 2, color: '#666' },
+      { name: 'Earth', relativeOrbit: 0.5, size: 5, speed: 0.01, angle: -Math.PI / 2, color: '#ffffff', draggable: true },
+      { name: 'Mars', relativeOrbit: 0.65, size: 3, speed: 0.008, angle: Math.random() * Math.PI * 2, color: '#444' }
     ];
     
     this.dragTarget = null;
@@ -26,26 +26,58 @@ class SolarBackground {
     this.canvas.addEventListener('mousemove', (e) => this.handleMove(e));
     window.addEventListener('mouseup', () => this.handleUp());
     
+    // Touch Events for Mobile
+    this.canvas.addEventListener('touchstart', (e) => this.handleDown(e), { passive: false });
+    this.canvas.addEventListener('touchmove', (e) => this.handleMove(e), { passive: false });
+    window.addEventListener('touchend', () => this.handleUp());
+    
     // Start Animation
     this.tick();
   }
 
   resize() {
-    this.canvas.width = this.canvas.clientWidth;
-    this.canvas.height = this.canvas.clientHeight;
+    this.canvas.width = this.canvas.clientWidth || window.innerWidth;
+    this.canvas.height = this.canvas.clientHeight || (window.innerWidth > 1024 ? window.innerHeight : window.innerWidth * 0.95);
     this.centerX = this.canvas.width / 2;
     this.centerY = this.canvas.height / 2;
+    
+    // 1.5x zoom factor for mobile/tablets
+    this.scaleFactor = window.innerWidth > 1024 ? 1.0 : 1.5;
+    
+    // We base everything on the smaller dimension to prevent overflow
+    const margin = 5;
+    const minDim = Math.min(this.canvas.width, this.canvas.height);
+    this.baseRadius = (minDim / 2 - margin) * 1.0; 
+    // The scaleFactor is applied to individual elements and orbits below
+  }
+
+  getXY(e) {
+    const rect = this.canvas.getBoundingClientRect();
+    let clientX, clientY;
+    
+    if (e.touches && e.touches.length > 0) {
+      clientX = e.touches[0].clientX;
+      clientY = e.touches[0].clientY;
+    } else {
+      clientX = e.clientX;
+      clientY = e.clientY;
+    }
+    
+    return {
+      mx: (clientX - rect.left) - this.centerX,
+      my: (clientY - rect.top) - this.centerY
+    };
   }
 
   handleDown(e) {
-    const rect = this.canvas.getBoundingClientRect();
-    const mx = (e.clientX - rect.left) - this.centerX;
-    const my = (e.clientY - rect.top) - this.centerY;
+    if (e.type === 'touchstart') e.preventDefault();
+    const { mx, my } = this.getXY(e);
     
     // Check if clicking near Earth (the only draggable one)
     const earth = this.planets.find(p => p.draggable);
-    const ex = Math.cos(earth.angle) * earth.orbit;
-    const ey = Math.sin(earth.angle) * earth.orbit;
+    const orbitRadius = earth.relativeOrbit * this.baseRadius;
+    const ex = Math.cos(earth.angle) * orbitRadius;
+    const ey = Math.sin(earth.angle) * orbitRadius;
     
     const dist = Math.sqrt((mx - ex)**2 + (my - ey)**2);
     if (dist < 30) { // Large target for easier dragging
@@ -56,9 +88,8 @@ class SolarBackground {
 
   handleMove(e) {
     if (this.isDragging && this.dragTarget) {
-      const rect = this.canvas.getBoundingClientRect();
-      const mx = (e.clientX - rect.left) - this.centerX;
-      const my = (e.clientY - rect.top) - this.centerY;
+      if (e.type === 'touchmove') e.preventDefault();
+      const { mx, my } = this.getXY(e);
       
       const currentMouseAngle = Math.atan2(my, mx);
       this.updateCalendarFromAngle(currentMouseAngle, true);
@@ -102,9 +133,14 @@ class SolarBackground {
   }
 
   tick() {
+    // Robust resize check for the first few seconds
+    if (!this.resizeCount) this.resizeCount = 0;
+    if (this.resizeCount < 10) {
+      this.resize();
+      this.resizeCount++;
+    }
+
     this.draw();
-    
-    // Auto-rotate non-draggable planets
     this.planets.forEach(p => {
       if (!p.draggable) {
         p.angle += p.speed * 0.2;
@@ -124,8 +160,9 @@ class SolarBackground {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     
     // Center Sun
+    const sunRadius = 15 * this.scaleFactor;
     this.ctx.beginPath();
-    this.ctx.arc(this.centerX, this.centerY, 15, 0, Math.PI * 2);
+    this.ctx.arc(this.centerX, this.centerY, sunRadius, 0, Math.PI * 2);
     this.ctx.fillStyle = '#111';
     this.ctx.fill();
     this.ctx.strokeStyle = '#222';
@@ -134,25 +171,29 @@ class SolarBackground {
 
     // Orbits and Planets
     this.planets.forEach(p => {
+      // Apply scaleFactor to the relative orbit for the zoom effect
+      const orbitRadius = p.relativeOrbit * this.baseRadius * this.scaleFactor;
+      
       // Orbit
       this.ctx.beginPath();
-      this.ctx.arc(this.centerX, this.centerY, p.orbit, 0, Math.PI * 2);
+      this.ctx.arc(this.centerX, this.centerY, orbitRadius, 0, Math.PI * 2);
       this.ctx.strokeStyle = p.draggable ? '#333' : '#1a1a1a';
       this.ctx.lineWidth = p.draggable ? 1 : 0.5;
       this.ctx.stroke();
 
       // Planet
-      const px = this.centerX + Math.cos(p.angle) * p.orbit;
-      const py = this.centerY + Math.sin(p.angle) * p.orbit;
+      const px = this.centerX + Math.cos(p.angle) * orbitRadius;
+      const py = this.centerY + Math.sin(p.angle) * orbitRadius;
       
+      const planetSize = p.size * this.scaleFactor;
       this.ctx.beginPath();
-      this.ctx.arc(px, py, p.size, 0, Math.PI * 2);
+      this.ctx.arc(px, py, planetSize, 0, Math.PI * 2);
       this.ctx.fillStyle = p.color;
       this.ctx.fill();
       
       if (p.draggable) {
         // Subtle glow for interactive Earth
-        this.ctx.shadowBlur = 10;
+        this.ctx.shadowBlur = 10 * this.scaleFactor;
         this.ctx.shadowColor = p.color;
         this.ctx.stroke();
         this.ctx.shadowBlur = 0;
