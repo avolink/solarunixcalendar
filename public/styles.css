@@ -117,26 +117,27 @@ header {
   display: inline-block;
 }
 
-.year-display {
+.clocks-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+}
+
+.clock-display {
+  font-family: 'Courier New', Courier, monospace; /* Monospaced for consistent clock ticking */
   font-size: 1.1rem;
-  color: var(--text-dim);
-  font-weight: 300;
+  letter-spacing: 1px;
+  font-weight: 500;
 }
 
-.calendar-grid {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 12px;
+.slx-color {
+  color: var(--accent-color);
+  text-shadow: 0 0 10px var(--accent-glow);
 }
 
-.weekday-header {
-  font-size: 0.9rem;
-  text-transform: uppercase;
-  letter-spacing: 2px;
+.greg-color {
   color: var(--text-dim);
-  text-align: center;
-  padding-bottom: 20px;
-  font-weight: 600;
 }
 
 .day-cell {

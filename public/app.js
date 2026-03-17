@@ -19,7 +19,8 @@ class SolarCalendar {
     // Cache Elements
     this.monthNameEl = document.getElementById('month-name');
     this.gridEl = document.getElementById('calendar-grid');
-    this.yearDisplayEl = document.getElementById('year-display');
+    this.slxClockEl = document.getElementById('slx-clock');
+    this.gregorianClockEl = document.getElementById('gregorian-clock');
     this.prevBtn = document.getElementById('prev-btn');
     this.nextBtn = document.getElementById('next-btn');
     
@@ -59,7 +60,6 @@ class SolarCalendar {
       const monthIndex = this.currentMonthIndex;
       const name = this.months[monthIndex];
       this.monthNameEl.textContent = name;
-      this.yearDisplayEl.textContent = `Solar Scale • Gregorian Year ${this.year}`;
       
       this.gridEl.innerHTML = '';
       
@@ -126,7 +126,36 @@ class SolarCalendar {
   init() {
     this.prevBtn.addEventListener('click', () => this.handlePrev());
     this.nextBtn.addEventListener('click', () => this.handleNext());
+    this.startClock();
     this.render();
+  }
+
+  startClock() {
+    this.updateClocks();
+    setInterval(() => this.updateClocks(), 1000);
+  }
+
+  updateClocks() {
+    const now = new Date();
+    
+    // Gregorian Clock: current_date YYYY-MM-DD HH:MM:SS
+    const pad = n => String(n).padStart(2, '0');
+    const gregDate = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}`;
+    const timeStr = `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+    this.gregorianClockEl.textContent = `GREGORIAN: ${gregDate} ${timeStr}`;
+    
+    // SLX Clock: SLX: SOLAR_UNIX = SLX(YYY/DDD) HH:MM:SS
+    const slxYear = now.getFullYear() - 1970;
+    const slxDay = this.getDayOfYear(now);
+    this.slxClockEl.textContent = `SLX: SOLAR_UNIX = SLX(${slxYear}/${slxDay}) ${timeStr}`;
+    
+    // Optional: Auto-refresh grid if day changes?
+    if (slxDay !== this.getDayOfYear(this.today)) {
+      this.today = now;
+      this.year = now.getFullYear();
+      this.determineCurrentSolarDate();
+      this.render();
+    }
   }
 }
 
