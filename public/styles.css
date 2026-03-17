@@ -140,6 +140,22 @@ header {
   color: var(--text-dim);
 }
 
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 12px;
+}
+
+.weekday-header {
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--text-dim);
+  text-align: center;
+  padding-bottom: 20px;
+  font-weight: 600;
+}
+
 .day-cell {
   background: var(--item-bg);
   border: 1px solid var(--glass-border);
