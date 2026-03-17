@@ -1,0 +1,200 @@
+:root {
+  --bg-color: #0d0d12;
+  --accent-color: #8c86ff;
+  --text-active: #ffffff;
+  --text-dim: rgba(255, 255, 255, 0.6);
+  --glass-bg: rgba(255, 255, 255, 0.03);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --item-bg: rgba(255, 255, 255, 0.05);
+  --accent-glow: rgba(140, 134, 255, 0.2);
+  --transition-speed: 0.4s;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  font-family: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-active);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  background-image: url('celestial_galaxy_nebula.png');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
+
+.nebula-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at center, transparent 0%, var(--bg-color) 100%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.calendar-container {
+  position: relative;
+  z-index: 1;
+  width: 95vw;
+  max-width: 900px;
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: 24px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  padding: 40px;
+  animation: fadeIn 0.8s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
+}
+
+.nav-btn {
+  background: var(--item-bg);
+  border: 1px solid var(--glass-border);
+  color: var(--text-active);
+  width: 50px;
+  height: 50px;
+  border-radius: 15px;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.nav-btn:hover {
+  background: var(--accent-color);
+  transform: scale(1.1);
+  box-shadow: 0 0 15px var(--accent-glow);
+}
+
+.nav-btn:active {
+  transform: scale(0.95);
+}
+
+.nav-btn svg {
+  width: 24px;
+  height: 24px;
+}
+
+.month-info {
+  text-align: center;
+}
+
+#month-name {
+  font-size: 3rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+  letter-spacing: -1px;
+  background: linear-gradient(135deg, #fff 0%, var(--accent-color) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  width: min-content;
+  white-space: nowrap;
+  display: inline-block;
+}
+
+.year-display {
+  font-size: 1.1rem;
+  color: var(--text-dim);
+  font-weight: 300;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 12px;
+}
+
+.weekday-header {
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--text-dim);
+  text-align: center;
+  padding-bottom: 20px;
+  font-weight: 600;
+}
+
+.day-cell {
+  background: var(--item-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+  min-height: 90px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.day-cell:hover {
+  border-color: var(--accent-color);
+  background: rgba(140, 134, 255, 0.1);
+  transform: translateY(-4px);
+}
+
+.day-cell.today {
+  border: 2px solid var(--accent-color);
+  background: rgba(140, 134, 255, 0.15);
+  box-shadow: inset 0 0 15px var(--accent-glow);
+}
+
+.day-num {
+  font-size: 1.8rem;
+  font-weight: 600;
+}
+
+.year-day-num {
+  font-size: 0.8rem;
+  align-self: flex-end;
+  color: var(--text-dim);
+}
+
+/* Leap layout adjustment (only 2 days) */
+.calendar-grid.leap-layout {
+  grid-template-columns: repeat(2, 1fr);
+  max-width: 300px;
+  margin: 0 auto;
+}
+
+@media (max-width: 600px) {
+  .calendar-container {
+    padding: 20px;
+  }
+  #month-name {
+    font-size: 2rem;
+  }
+  .day-cell {
+    min-height: 70px;
+    padding: 8px;
+  }
+  .day-num {
+    font-size: 1.2rem;
+  }
+}
