@@ -141,24 +141,37 @@ class SolarCalendar {
     const prevLeap = getLeapYear(this.year, -1);
     const nextLeap = getLeapYear(this.year, 1);
     
-    const format = (gregY) => {
+    const formatYear = (gregY) => {
       const slxY = gregY - 1970;
       return `SLX-${slxY}(G-${gregY})`;
     };
     
-    const prevSpan = document.createElement('span');
-    prevSpan.textContent = format(prevLeap);
+    const createItem = (y, label, active = false) => {
+      const item = document.createElement('div');
+      item.className = 'timeline-item' + (active ? ' active' : '');
+      
+      const yearSpan = document.createElement('span');
+      yearSpan.className = 'year-text';
+      yearSpan.textContent = formatYear(y);
+      
+      const labelSpan = document.createElement('span');
+      labelSpan.className = 'label-text';
+      labelSpan.textContent = label;
+      
+      item.appendChild(yearSpan);
+      item.appendChild(labelSpan);
+      return item;
+    };
     
-    const currentSpan = document.createElement('span');
-    currentSpan.className = 'current';
-    currentSpan.textContent = format(this.year);
+    // Previous Leap
+    this.leapTimelineEl.appendChild(createItem(prevLeap, 'PREV'));
     
-    const nextSpan = document.createElement('span');
-    nextSpan.textContent = format(nextLeap);
+    // Current Year (Active)
+    const currentLabel = this.isLeapYear(this.year) ? 'LEAP' : 'NO-LEAP';
+    this.leapTimelineEl.appendChild(createItem(this.year, currentLabel, true));
     
-    this.leapTimelineEl.appendChild(prevSpan);
-    this.leapTimelineEl.appendChild(currentSpan);
-    this.leapTimelineEl.appendChild(nextSpan);
+    // Next Leap
+    this.leapTimelineEl.appendChild(createItem(nextLeap, 'NEXT'));
   }
 
   handlePrev() {

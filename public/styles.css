@@ -201,31 +201,54 @@ header {
 }
 
 .day-num.leap-day-highlight {
-  color: #ff3b30;
+  color: #ff453a;
   font-weight: 500;
-  text-shadow: 0 0 15px rgba(255, 59, 48, 0.2);
+  text-shadow: 0 0 10px rgba(255, 69, 58, 0.4);
 }
 
 .day-cell.non-leap-inactive {
-  opacity: 0.3;
+  opacity: 0.15;
 }
 
 .leap-timeline {
-  margin-top: 40px;
+  margin-top: 60px;
   padding-top: 20px;
   border-top: 1px dotted var(--border-color);
   font-family: 'Courier New', monospace;
-  font-size: 0.8rem;
-  color: var(--text-muted);
   display: flex;
   justify-content: space-between;
+  width: 100%;
+}
+
+.timeline-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+}
+
+.year-text {
+  font-size: 0.8rem;
+  color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 1px;
 }
 
-.leap-timeline span.current {
+.label-text {
+  font-size: 1.2rem;
+  font-weight: 200;
+  color: var(--text-muted);
+  letter-spacing: 4px;
+}
+
+.timeline-item.active .year-text {
   color: var(--text-main);
-  border-bottom: 1px solid var(--text-main);
+  text-decoration: underline;
+}
+
+.timeline-item.active .label-text {
+  color: var(--text-main);
 }
 
 /* Animations */
