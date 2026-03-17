@@ -20,9 +20,9 @@ class SolarBackground {
     window.addEventListener('resize', () => this.resize());
     this.resize();
     
-    // Global Event Listeners
-    window.addEventListener('mousedown', (e) => this.handleDown(e));
-    window.addEventListener('mousemove', (e) => this.handleMove(e));
+    // Canvas Event Listeners
+    this.canvas.addEventListener('mousedown', (e) => this.handleDown(e));
+    this.canvas.addEventListener('mousemove', (e) => this.handleMove(e));
     window.addEventListener('mouseup', () => this.handleUp());
     
     // Start Animation
@@ -30,15 +30,16 @@ class SolarBackground {
   }
 
   resize() {
-    this.canvas.width = window.innerWidth;
-    this.canvas.height = window.innerHeight;
+    this.canvas.width = this.canvas.clientWidth;
+    this.canvas.height = this.canvas.clientHeight;
     this.centerX = this.canvas.width / 2;
     this.centerY = this.canvas.height / 2;
   }
 
   handleDown(e) {
-    const mx = e.clientX - this.centerX;
-    const my = e.clientY - this.centerY;
+    const rect = this.canvas.getBoundingClientRect();
+    const mx = (e.clientX - rect.left) - this.centerX;
+    const my = (e.clientY - rect.top) - this.centerY;
     
     // Check if clicking near Earth (the only draggable one)
     const earth = this.planets.find(p => p.draggable);
@@ -54,8 +55,9 @@ class SolarBackground {
 
   handleMove(e) {
     if (this.isDragging && this.dragTarget) {
-      const mx = e.clientX - this.centerX;
-      const my = e.clientY - this.centerY;
+      const rect = this.canvas.getBoundingClientRect();
+      const mx = (e.clientX - rect.left) - this.centerX;
+      const my = (e.clientY - rect.top) - this.centerY;
       
       this.dragTarget.angle = Math.atan2(my, mx);
       this.updateCalendarFromAngle(this.dragTarget.angle);

@@ -20,38 +20,62 @@ body {
   background-color: var(--bg-color);
   color: var(--text-main);
   min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
   -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+.app-wrapper {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+}
+
+.solar-side {
+  flex: 1.2;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  background-color: #000;
+  border-right: 1px solid var(--border-color);
   overflow: hidden;
 }
 
+.calendar-side {
+  flex: 1;
+  background-color: var(--bg-color);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px;
+  overflow-y: auto;
+}
+
 #solar-system-bg {
-  position: fixed;
-  top: 0;
-  left: 0;
   width: 100%;
   height: 100%;
-  z-index: -1;
-  background-color: var(--bg-color);
+  display: block;
 }
 
 .calendar-container {
-  position: relative;
-  z-index: 1;
-  width: 90vw;
+  width: 100%;
   max-width: 800px;
-  background: rgba(5, 5, 5, 0.7);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid var(--border-color);
-  padding: 40px;
-  pointer-events: none; /* Allows dragging background through empty space */
+  background: transparent;
+  padding: 0;
 }
 
-.calendar-container > * {
-  pointer-events: auto; /* Re-enable for header and grid */
+@media (max-width: 1024px) {
+  .app-wrapper {
+    flex-direction: column;
+  }
+  .solar-side {
+    height: 50vh;
+    position: relative;
+    border-right: none;
+    border-bottom: 1px solid var(--border-color);
+  }
+  .calendar-side {
+    padding: 20px;
+  }
 }
 
 header {
