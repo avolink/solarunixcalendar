@@ -203,17 +203,18 @@ header {
 .day-num.leap-day-highlight {
   color: #FF2400; /* Intense Scarlet */
   font-weight: 700;
-  text-shadow: 0 0 20px rgba(255, 36, 0, 0.6);
+  text-shadow: 0 0 15px rgba(255, 36, 0, 0.8);
 }
 
 .day-cell.leap-day-active {
-  background-color: #000000 !important;
+  background-color: transparent !important;
   border-color: #FF2400 !important;
-  box-shadow: inset 0 0 30px rgba(255, 36, 0, 0.2), 0 0 15px rgba(255, 36, 0, 0.1);
+  box-shadow: 0 0 20px rgba(255, 36, 0, 0.2);
 }
 
 .day-cell.non-leap-inactive {
-  opacity: 0.25;
+  background-color: transparent !important;
+  opacity: 0.3;
 }
 
 .leap-timeline {
