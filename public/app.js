@@ -144,10 +144,10 @@ class SolarCalendar {
     const timeStr = `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
     this.gregorianClockEl.textContent = `GREGORIAN: ${gregDate} ${timeStr}`;
     
-    // SLX Clock: SLX: SOLAR_UNIX = SLX(YYY/DDD) HH:MM:SS
+    // SLX Clock: SLX(YYY/DDD) HH:MM:SS
     const slxYear = now.getFullYear() - 1970;
     const slxDay = this.getDayOfYear(now);
-    this.slxClockEl.textContent = `SLX: SOLAR_UNIX = SLX(${slxYear}/${slxDay}) ${timeStr}`;
+    this.slxClockEl.textContent = `SLX(${slxYear}/${slxDay}) ${timeStr}`;
     
     // Optional: Auto-refresh grid if day changes?
     if (slxDay !== this.getDayOfYear(this.today)) {
