@@ -1,3 +1,5 @@
+let solarCalendar;
+
 class SolarCalendar {
   constructor() {
     this.months = [
@@ -128,6 +130,24 @@ class SolarCalendar {
     this.nextBtn.addEventListener('click', () => this.handleNext());
     this.startClock();
     this.render();
+    solarCalendar = this; // Global access handle
+  }
+
+  jumpToDoy(doy) {
+    if (doy < 1) doy = 1;
+    if (doy > (this.isLeapYear(this.year) ? 366 : 365)) doy = (this.isLeapYear(this.year) ? 366 : 365);
+    
+    let newMonth;
+    if (doy <= 364) {
+      newMonth = Math.floor((doy - 1) / 28);
+    } else {
+      newMonth = 13; // Leap
+    }
+    
+    if (newMonth !== this.currentMonthIndex) {
+      this.currentMonthIndex = newMonth;
+      this.render();
+    }
   }
 
   startClock() {

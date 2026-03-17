@@ -24,13 +24,34 @@ body {
   justify-content: center;
   align-items: center;
   -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+}
+
+#solar-system-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  background-color: var(--bg-color);
 }
 
 .calendar-container {
+  position: relative;
+  z-index: 1;
   width: 90vw;
   max-width: 800px;
-  background: var(--bg-color);
+  background: rgba(5, 5, 5, 0.7);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid var(--border-color);
   padding: 40px;
+  pointer-events: none; /* Allows dragging background through empty space */
+}
+
+.calendar-container > * {
+  pointer-events: auto; /* Re-enable for header and grid */
 }
 
 header {
