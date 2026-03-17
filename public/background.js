@@ -60,8 +60,8 @@ class SolarBackground {
       const mx = (e.clientX - rect.left) - this.centerX;
       const my = (e.clientY - rect.top) - this.centerY;
       
-      this.dragTarget.angle = Math.atan2(my, mx);
-      this.updateCalendarFromAngle(this.dragTarget.angle, true);
+      const currentMouseAngle = Math.atan2(my, mx);
+      this.updateCalendarFromAngle(currentMouseAngle, true);
     }
   }
 
@@ -78,9 +78,12 @@ class SolarBackground {
     const stepSize = (Math.PI * 2) / this.totalSteps;
     const stepIndex = Math.floor(normAngle / stepSize);
     
-    // Snap visually if not dragging or for final position
-    if (this.dragTarget && isInteracting) {
-      // While dragging, we allow continuous motion but trigger stepped updates
+    if (isInteracting && this.dragTarget) {
+      // SNAP Earth position to the center of the current step
+      const targetAngle = (stepIndex * stepSize) + (stepSize / 2) - (Math.PI / 2);
+      this.dragTarget.angle = targetAngle;
+      
+      // Update calendar month
       if (window.solarCalendar) {
         window.solarCalendar.setMonth(stepIndex);
       }

@@ -1,5 +1,3 @@
-let solarCalendar;
-
 class SolarCalendar {
   constructor() {
     this.months = [
@@ -130,7 +128,7 @@ class SolarCalendar {
     this.nextBtn.addEventListener('click', () => this.handleNext());
     this.startClock();
     this.render();
-    solarCalendar = this; // Global access handle
+    window.solarCalendar = this; // Explicit global attachment
   }
 
   setMonth(index) {
