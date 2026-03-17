@@ -172,11 +172,16 @@ header {
   flex-direction: column;
   justify-content: space-between;
   transition: var(--transition);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
 }
 
 .day-cell:hover {
   background-color: var(--surface-color);
   z-index: 10;
+  border-color: rgba(0, 229, 255, 0.3);
+  transform: translateY(-2px);
 }
 
 .day-cell.today {

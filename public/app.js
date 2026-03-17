@@ -106,6 +106,14 @@ class SolarCalendar {
   createDayCell(solarDay, doy) {
     const cell = document.createElement('div');
     cell.className = 'day-cell';
+    cell.style.cursor = 'pointer';
+    
+    cell.addEventListener('click', () => {
+      this.setSolarDay(doy);
+      if (window.solarBackground) {
+        window.solarBackground.updateEarthFromDoy(doy);
+      }
+    });
     
     const isToday = (this.getDayOfYear(this.today) === doy && this.year === this.today.getFullYear());
     if (isToday) cell.classList.add('today');
