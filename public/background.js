@@ -12,6 +12,7 @@ class SolarBackground {
     
     this.dragTarget = null;
     this.isDragging = false;
+    this.totalSteps = 14;
     
     this.init();
   }
@@ -60,7 +61,7 @@ class SolarBackground {
       const my = (e.clientY - rect.top) - this.centerY;
       
       this.dragTarget.angle = Math.atan2(my, mx);
-      this.updateCalendarFromAngle(this.dragTarget.angle);
+      this.updateCalendarFromAngle(this.dragTarget.angle, true);
     }
   }
 
@@ -69,18 +70,32 @@ class SolarBackground {
     this.dragTarget = null;
   }
 
-  updateCalendarFromAngle(angle) {
-    // Current angle: -PI to PI
-    // Map -PI/2 (top) to day 1
-    // Loop around.
+  updateCalendarFromAngle(angle, isInteracting = false) {
     let normAngle = angle + (Math.PI / 2);
-    if (normAngle < 0) normAngle += Math.PI * 2;
+    while (normAngle < 0) normAngle += Math.PI * 2;
+    while (normAngle >= Math.PI * 2) normAngle -= Math.PI * 2;
     
-    const progress = normAngle / (Math.PI * 2);
-    const doy = Math.floor(progress * 365) + 1; // Simplify to 365 logic for bg
+    const stepSize = (Math.PI * 2) / this.totalSteps;
+    const stepIndex = Math.floor(normAngle / stepSize);
     
-    if (window.solarCalendar) {
-      window.solarCalendar.jumpToDoy(doy);
+    // Snap visually if not dragging or for final position
+    if (this.dragTarget && isInteracting) {
+      // While dragging, we allow continuous motion but trigger stepped updates
+      if (window.solarCalendar) {
+        window.solarCalendar.setMonth(stepIndex);
+      }
+    }
+  }
+
+  updateEarthFromMonth(monthIndex) {
+    const earth = this.planets.find(p => p.draggable);
+    if (earth && !this.isDragging) {
+      const stepSize = (Math.PI * 2) / this.totalSteps;
+      // Position at center of segment
+      const targetAngle = (monthIndex * stepSize) + (stepSize / 2) - (Math.PI / 2);
+      
+      // Smoothly interpolate to target? For now, just snap
+      earth.angle = targetAngle;
     }
   }
 
@@ -89,8 +104,13 @@ class SolarBackground {
     
     // Auto-rotate non-draggable planets
     this.planets.forEach(p => {
-      if (!p.draggable || !this.isDragging) {
-        p.angle += p.speed * 0.2; // slow it down for background feel
+      if (!p.draggable) {
+        p.angle += p.speed * 0.2;
+      } else if (!this.isDragging) {
+        // Sync Earth with current calendar month if not dragging
+        if (window.solarCalendar) {
+          this.updateEarthFromMonth(window.solarCalendar.currentMonthIndex);
+        }
       }
     });
 
@@ -139,5 +159,5 @@ class SolarBackground {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  new SolarBackground();
+  window.solarBackground = new SolarBackground();
 });

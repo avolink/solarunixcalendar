@@ -133,9 +133,20 @@ class SolarCalendar {
     solarCalendar = this; // Global access handle
   }
 
+  setMonth(index) {
+    if (index < 0) index = 13;
+    if (index > 13) index = 0;
+    
+    if (this.currentMonthIndex !== index) {
+      this.currentMonthIndex = index;
+      this.render();
+    }
+  }
+
   jumpToDoy(doy) {
     if (doy < 1) doy = 1;
-    if (doy > (this.isLeapYear(this.year) ? 366 : 365)) doy = (this.isLeapYear(this.year) ? 366 : 365);
+    const maxDay = this.isLeapYear(this.year) ? 366 : 365;
+    if (doy > maxDay) doy = maxDay;
     
     let newMonth;
     if (doy <= 364) {
@@ -144,10 +155,7 @@ class SolarCalendar {
       newMonth = 13; // Leap
     }
     
-    if (newMonth !== this.currentMonthIndex) {
-      this.currentMonthIndex = newMonth;
-      this.render();
-    }
+    this.setMonth(newMonth);
   }
 
   startClock() {
