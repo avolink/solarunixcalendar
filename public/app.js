@@ -114,7 +114,9 @@ class SolarCalendar {
     displayNum.textContent = solarDay;
     if (solarDay === 366) {
       displayNum.classList.add('leap-day-highlight');
-      if (!this.isLeapYear(this.year)) {
+      if (this.isLeapYear(this.year)) {
+        cell.classList.add('leap-day-active');
+      } else {
         cell.classList.add('non-leap-inactive');
       }
     }
