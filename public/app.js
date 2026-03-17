@@ -12,6 +12,7 @@ class SolarCalendar {
     this.currentMonthIndex = 0;
     this.today = new Date();
     this.year = this.today.getFullYear();
+    this.selectedDoy = this.getDayOfYear(this.today);
     
     // Calculate current month from today
     this.determineCurrentSolarDate();
@@ -109,6 +110,10 @@ class SolarCalendar {
     const isToday = (this.getDayOfYear(this.today) === doy && this.year === this.today.getFullYear());
     if (isToday) cell.classList.add('today');
     
+    if (this.selectedDoy === doy) {
+      cell.classList.add('selected-day');
+    }
+    
     const displayNum = document.createElement('div');
     displayNum.className = 'day-num';
     displayNum.textContent = solarDay;
@@ -202,23 +207,58 @@ class SolarCalendar {
     
     if (this.currentMonthIndex !== index) {
       this.currentMonthIndex = index;
+      
+      // Update selected day to first day of new month if jumping months
+      if (index < 13) {
+        this.selectedDoy = (index * 28) + 1;
+      } else {
+        this.selectedDoy = 365;
+      }
+      
       this.render();
     }
   }
 
-  jumpToDoy(doy) {
-    if (doy < 1) doy = 1;
+  setSolarDay(doy) {
     const maxDay = this.isLeapYear(this.year) ? 366 : 365;
+    if (doy < 1) doy = 1;
     if (doy > maxDay) doy = maxDay;
-    
-    let newMonth;
+
+    let targetMonth;
     if (doy <= 364) {
-      newMonth = Math.floor((doy - 1) / 28);
+      targetMonth = Math.floor((doy - 1) / 28);
     } else {
-      newMonth = 13; // Leap
+      targetMonth = 13;
     }
-    
-    this.setMonth(newMonth);
+
+    const monthChanged = (this.currentMonthIndex !== targetMonth);
+    this.currentMonthIndex = targetMonth;
+    this.selectedDoy = doy;
+
+    if (monthChanged) {
+      this.render();
+    } else {
+      this.updateSelectedDayHighlight();
+    }
+  }
+
+  getCurrentDoy() {
+    return this.selectedDoy;
+  }
+
+  updateSelectedDayHighlight() {
+    const cells = this.gridEl.querySelectorAll('.day-cell');
+    cells.forEach(cell => {
+      cell.classList.remove('selected-day');
+      // We don't store DOY in cell usually, so we'll just check based on our grid index
+      // But it's easier to just re-scan or re-render if it gets complex.
+      // For performance, let's just trigger a re-render for now since it's 28 cells.
+    });
+    this.render(); 
+  }
+
+  jumpToDoy(doy) {
+    this.setSolarDay(doy);
   }
 
   startClock() {

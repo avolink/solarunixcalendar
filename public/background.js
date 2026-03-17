@@ -12,7 +12,7 @@ class SolarBackground {
     
     this.dragTarget = null;
     this.isDragging = false;
-    this.totalSteps = 14;
+    this.totalSteps = 366; // Increased resolution to days
     
     this.init();
   }
@@ -77,27 +77,26 @@ class SolarBackground {
     
     const stepSize = (Math.PI * 2) / this.totalSteps;
     const stepIndex = Math.floor(normAngle / stepSize);
+    const doy = stepIndex + 1;
     
     if (isInteracting && this.dragTarget) {
-      // SNAP Earth position to the center of the current step
+      // SNAP Earth position to the center of the current day step
       const targetAngle = (stepIndex * stepSize) + (stepSize / 2) - (Math.PI / 2);
       this.dragTarget.angle = targetAngle;
       
-      // Update calendar month
+      // Update calendar day precisely
       if (window.solarCalendar) {
-        window.solarCalendar.setMonth(stepIndex);
+        window.solarCalendar.setSolarDay(doy);
       }
     }
   }
 
-  updateEarthFromMonth(monthIndex) {
+  updateEarthFromDoy(doy) {
     const earth = this.planets.find(p => p.draggable);
     if (earth && !this.isDragging) {
+      const stepIndex = doy - 1;
       const stepSize = (Math.PI * 2) / this.totalSteps;
-      // Position at center of segment
-      const targetAngle = (monthIndex * stepSize) + (stepSize / 2) - (Math.PI / 2);
-      
-      // Smoothly interpolate to target? For now, just snap
+      const targetAngle = (stepIndex * stepSize) + (stepSize / 2) - (Math.PI / 2);
       earth.angle = targetAngle;
     }
   }
@@ -110,9 +109,10 @@ class SolarBackground {
       if (!p.draggable) {
         p.angle += p.speed * 0.2;
       } else if (!this.isDragging) {
-        // Sync Earth with current calendar month if not dragging
+        // Sync Earth with current calendar day if not dragging
         if (window.solarCalendar) {
-          this.updateEarthFromMonth(window.solarCalendar.currentMonthIndex);
+          const currentDoy = window.solarCalendar.getCurrentDoy();
+          this.updateEarthFromDoy(currentDoy);
         }
       }
     });
