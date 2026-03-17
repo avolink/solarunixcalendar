@@ -21,6 +21,7 @@ class SolarCalendar {
     this.gridEl = document.getElementById('calendar-grid');
     this.slxClockEl = document.getElementById('slx-clock');
     this.gregorianClockEl = document.getElementById('gregorian-clock');
+    this.leapTimelineEl = document.getElementById('leap-timeline');
     this.prevBtn = document.getElementById('prev-btn');
     this.nextBtn = document.getElementById('next-btn');
     
@@ -90,6 +91,12 @@ class SolarCalendar {
         if (this.isLeapYear(this.year)) {
           this.createDayCell(366, 366);
         }
+        
+        this.renderLeapTimeline();
+      }
+      
+      if (monthIndex < 13) {
+        this.leapTimelineEl.style.display = 'none';
       }
       
       this.gridEl.style.opacity = '1';
@@ -104,11 +111,51 @@ class SolarCalendar {
     const isToday = (this.getDayOfYear(this.today) === doy && this.year === this.today.getFullYear());
     if (isToday) cell.classList.add('today');
     
-    cell.innerHTML = `
-      <div class="day-num">${solarDay}</div>
-      <div class="year-day-num">${doy}</div>
-    `;
+    const displayNum = document.createElement('div');
+    displayNum.className = 'day-num';
+    displayNum.textContent = solarDay;
+    if (solarDay === 366) displayNum.classList.add('leap-day-highlight');
+    cell.appendChild(displayNum);
+    
+    const yearDoy = document.createElement('div');
+    yearDoy.className = 'year-day-num';
+    yearDoy.textContent = doy;
+    cell.appendChild(yearDoy);
+    
     this.gridEl.appendChild(cell);
+  }
+
+  renderLeapTimeline() {
+    this.leapTimelineEl.innerHTML = '';
+    this.leapTimelineEl.style.display = 'flex';
+    
+    const getLeapYear = (start, step) => {
+      let y = start + step;
+      while (!this.isLeapYear(y)) y += step;
+      return y;
+    };
+    
+    const prevLeap = getLeapYear(this.year, -1);
+    const nextLeap = getLeapYear(this.year, 1);
+    
+    const format = (gregY) => {
+      const slxY = gregY - 1970;
+      return `${slxY}(${gregY})`;
+    };
+    
+    const prevSpan = document.createElement('span');
+    prevSpan.textContent = format(prevLeap);
+    
+    const currentSpan = document.createElement('span');
+    currentSpan.className = 'current';
+    currentSpan.textContent = format(this.year);
+    
+    const nextSpan = document.createElement('span');
+    nextSpan.textContent = format(nextLeap);
+    
+    this.leapTimelineEl.appendChild(prevSpan);
+    this.leapTimelineEl.appendChild(currentSpan);
+    this.leapTimelineEl.appendChild(nextSpan);
   }
 
   handlePrev() {

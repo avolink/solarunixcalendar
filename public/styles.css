@@ -200,6 +200,29 @@ header {
   margin: 0;
 }
 
+.day-num.leap-day-highlight {
+  color: #ff3b30;
+  font-weight: 500;
+}
+
+.leap-timeline {
+  margin-top: 40px;
+  padding-top: 20px;
+  border-top: 1px dotted var(--border-color);
+  font-family: 'Courier New', monospace;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  display: flex;
+  justify-content: space-between;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.leap-timeline span.current {
+  color: var(--text-main);
+  border-bottom: 1px solid var(--text-main);
+}
+
 /* Animations */
 #calendar-grid {
   transition: opacity 0.3s ease;
