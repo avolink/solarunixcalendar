@@ -6,7 +6,7 @@ class SolarBackground {
     this.planets = [
       { name: 'Mercury', relativeOrbit: 0.15, size: 2, speed: 0.04, angle: Math.random() * Math.PI * 2, color: '#444' },
       { name: 'Venus', relativeOrbit: 0.3, size: 4, speed: 0.015, angle: Math.random() * Math.PI * 2, color: '#666' },
-      { name: 'Earth', relativeOrbit: 0.48, size: 5, speed: 0.01, angle: -Math.PI / 2, color: '#ffffff', draggable: true },
+      { name: 'Earth', relativeOrbit: 0.48, size: 5, speed: 0.01, angle: -Math.PI / 2, color: '#ffffff', draggable: true, hitRadius: 100 },
       { name: 'Mars', relativeOrbit: 0.6, size: 3, speed: 0.008, angle: Math.random() * Math.PI * 2, color: '#444' }
     ];
     
@@ -81,12 +81,13 @@ class SolarBackground {
     
     // Check if clicking near Earth (the only draggable one)
     const earth = this.planets.find(p => p.draggable);
-    const orbitRadius = earth.relativeOrbit * this.baseRadius;
+    const orbitRadius = earth.relativeOrbit * this.baseRadius * this.scaleFactor;
     const ex = Math.cos(earth.angle) * orbitRadius;
     const ey = Math.sin(earth.angle) * orbitRadius;
     
+    const hitRadius = (earth.hitRadius || 30) * this.scaleFactor;
     const dist = Math.sqrt((mx - ex)**2 + (my - ey)**2);
-    if (dist < 30) { // Large target for easier dragging
+    if (dist < hitRadius) { // Larger target as requested
       this.isDragging = true;
       this.dragTarget = earth;
     }
@@ -198,11 +199,30 @@ class SolarBackground {
       this.ctx.fill();
       
       if (p.draggable) {
+        // Drag helper: Subtle line between Sun and Earth
+        this.ctx.beginPath();
+        this.ctx.moveTo(this.centerX, this.centerY);
+        this.ctx.lineTo(px, py);
+        this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+        this.ctx.stroke();
+
         // Subtle glow for interactive Earth
+        this.ctx.save();
         this.ctx.shadowBlur = 10 * this.scaleFactor;
         this.ctx.shadowColor = p.color;
+        this.ctx.beginPath();
+        this.ctx.arc(px, py, planetSize, 0, Math.PI * 2);
         this.ctx.stroke();
-        this.ctx.shadowBlur = 0;
+        this.ctx.restore();
+        
+        // Large hit area guide (Subtle dash circle)
+        this.ctx.beginPath();
+        this.ctx.arc(px, py, (p.hitRadius || 30) * this.scaleFactor, 0, Math.PI * 2);
+        this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.04)';
+        this.ctx.setLineDash([5, 12]);
+        this.ctx.lineWidth = 1;
+        this.ctx.stroke();
+        this.ctx.setLineDash([]);
       }
     });
   }
