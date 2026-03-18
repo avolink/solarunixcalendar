@@ -67,10 +67,14 @@ class SolarCalendar {
       
       if (monthIndex < 13) {
         this.gridEl.classList.remove('leap-layout');
-        this.planets.forEach(p => {
+        const shortPlanets = ["MER", "VEN", "TIE", "MAR", "JUP", "SAT", "URA"];
+        this.planets.forEach((p, idx) => {
           const h = document.createElement('div');
           h.className = 'weekday-header';
-          h.textContent = p;
+          h.innerHTML = `
+            <span class="full-name">${p}</span>
+            <span class="short-name">${shortPlanets[idx]}</span>
+          `;
           this.gridEl.appendChild(h);
         });
         
@@ -84,7 +88,10 @@ class SolarCalendar {
         this.leapDays.forEach(d => {
           const h = document.createElement('div');
           h.className = 'weekday-header';
-          h.textContent = d;
+          h.innerHTML = `
+            <span class="full-name">${d}</span>
+            <span class="short-name">${d.substring(0, 3).toUpperCase()}</span>
+          `;
           this.gridEl.appendChild(h);
         });
         

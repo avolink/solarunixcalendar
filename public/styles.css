@@ -203,6 +203,13 @@ header {
   font-weight: 400;
 }
 
+.weekday-header .short-name {
+  display: none;
+}
+.weekday-header .full-name {
+  display: inline;
+}
+
 .day-cell {
   background-color: var(--bg-color);
   padding: 20px 15px;
@@ -344,6 +351,12 @@ header {
     padding: 10px 0;
     font-size: 0.6rem;
     letter-spacing: 1px;
+  }
+  .weekday-header .full-name {
+    display: none;
+  }
+  .weekday-header .short-name {
+    display: inline;
   }
   .label-text {
     font-size: 0.9rem;
