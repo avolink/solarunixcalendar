@@ -217,7 +217,6 @@ header {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  transition: var(--transition);
   cursor: pointer;
   position: relative;
   overflow: hidden;
@@ -319,10 +318,7 @@ header {
   color: var(--text-main);
 }
 
-/* Animations */
-#calendar-grid {
-  transition: opacity 0.3s ease;
-}
+
 
 @media (max-width: 600px) {
   .solar-side {

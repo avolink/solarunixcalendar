@@ -26,9 +26,6 @@ class SolarCalendar {
     this.prevBtn = document.getElementById('prev-btn');
     this.nextBtn = document.getElementById('next-btn');
     
-    // Smooth transition styles
-    this.gridEl.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
-    
     this.init();
   }
 
@@ -55,59 +52,51 @@ class SolarCalendar {
   }
 
   render() {
-    this.gridEl.style.opacity = '0';
-    this.gridEl.style.transform = 'translateY(10px)';
+    const monthIndex = this.currentMonthIndex;
+    const name = this.months[monthIndex];
+    this.monthNameEl.textContent = name;
     
-    setTimeout(() => {
-      const monthIndex = this.currentMonthIndex;
-      const name = this.months[monthIndex];
-      this.monthNameEl.textContent = name;
+    this.gridEl.innerHTML = '';
+    
+    if (monthIndex < 13) {
+      this.gridEl.classList.remove('leap-layout');
+      const shortPlanets = ["MER", "VEN", "TER", "MAR", "JUP", "SAT", "URA"];
+      this.planets.forEach((p, idx) => {
+        const h = document.createElement('div');
+        h.className = 'weekday-header';
+        h.innerHTML = `
+          <span class="full-name">${p}</span>
+          <span class="short-name">${shortPlanets[idx]}</span>
+        `;
+        this.gridEl.appendChild(h);
+      });
       
-      this.gridEl.innerHTML = '';
-      
-      if (monthIndex < 13) {
-        this.gridEl.classList.remove('leap-layout');
-        const shortPlanets = ["MER", "VEN", "TER", "MAR", "JUP", "SAT", "URA"];
-        this.planets.forEach((p, idx) => {
-          const h = document.createElement('div');
-          h.className = 'weekday-header';
-          h.innerHTML = `
-            <span class="full-name">${p}</span>
-            <span class="short-name">${shortPlanets[idx]}</span>
-          `;
-          this.gridEl.appendChild(h);
-        });
-        
-        const startDoy = monthIndex * 28 + 1;
-        for (let i = 1; i <= 28; i++) {
-          const doy = startDoy + i - 1;
-          this.createDayCell(i, doy);
-        }
-      } else {
-        this.gridEl.classList.add('leap-layout');
-        this.leapDays.forEach(d => {
-          const h = document.createElement('div');
-          h.className = 'weekday-header';
-          h.innerHTML = `
-            <span class="full-name">${d}</span>
-            <span class="short-name">${d.substring(0, 3).toUpperCase()}</span>
-          `;
-          this.gridEl.appendChild(h);
-        });
-        
-        this.createDayCell(365, 365);
-        this.createDayCell(366, 366);
-        
-        this.renderLeapTimeline();
+      const startDoy = monthIndex * 28 + 1;
+      for (let i = 1; i <= 28; i++) {
+        const doy = startDoy + i - 1;
+        this.createDayCell(i, doy);
       }
+    } else {
+      this.gridEl.classList.add('leap-layout');
+      this.leapDays.forEach(d => {
+        const h = document.createElement('div');
+        h.className = 'weekday-header';
+        h.innerHTML = `
+          <span class="full-name">${d}</span>
+          <span class="short-name">${d.substring(0, 3).toUpperCase()}</span>
+        `;
+        this.gridEl.appendChild(h);
+      });
       
-      if (monthIndex < 13) {
-        this.leapTimelineEl.style.display = 'none';
-      }
+      this.createDayCell(365, 365);
+      this.createDayCell(366, 366);
       
-      this.gridEl.style.opacity = '1';
-      this.gridEl.style.transform = 'translateY(0)';
-    }, 200);
+      this.renderLeapTimeline();
+    }
+    
+    if (monthIndex < 13) {
+      this.leapTimelineEl.style.display = 'none';
+    }
   }
 
   createDayCell(solarDay, doy) {
