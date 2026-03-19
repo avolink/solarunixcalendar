@@ -6,7 +6,7 @@ class SolarBackground {
     this.planets = [
       { name: 'Mercury', relativeOrbit: 0.15, size: 2, speed: 0.04, angle: Math.random() * Math.PI * 2, color: '#444' },
       { name: 'Venus', relativeOrbit: 0.3, size: 4, speed: 0.015, angle: Math.random() * Math.PI * 2, color: '#666' },
-      { name: 'Earth', relativeOrbit: 0.48, size: 5, speed: 0.01, angle: -Math.PI / 2, color: '#ffffff', draggable: true, hitRadius: 100 },
+      { name: 'TERRA', relativeOrbit: 0.48, size: 5, speed: 0.01, angle: -Math.PI / 2, color: '#ffffff', draggable: true, hitRadius: 100 },
       { name: 'Mars', relativeOrbit: 0.6, size: 3, speed: 0.008, angle: Math.random() * Math.PI * 2, color: '#444' }
     ];
     

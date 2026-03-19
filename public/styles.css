@@ -307,7 +307,7 @@ header {
   font-size: 1.2rem;
   font-weight: 200;
   color: var(--text-muted);
-  letter-spacing: 4px;
+  letter-spacing: 2px;
 }
 
 .timeline-item.active .year-text {
@@ -360,7 +360,7 @@ header {
   }
   .label-text {
     font-size: 0.9rem;
-    letter-spacing: 2px;
+    letter-spacing: 1px;
   }
   .year-text {
     font-size: 0.6rem;

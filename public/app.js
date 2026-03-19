@@ -5,7 +5,7 @@ class SolarCalendar {
       "Septeth", "Octoth", "Novtath", "Dekath", "Dekaunath", 
       "Dekaduath", "Dekatriath", "Leap"
     ];
-    this.planets = ["Mercury", "Venus", "Earth", "Mars", "Jupiter", "Saturn", "Uranus"];
+    this.planets = ["Mercury", "Venus", "TERRA", "Mars", "Jupiter", "Saturn", "Uranus"];
     this.leapDays = ["Sunday", "Moonday"];
     
     // Initial state
@@ -67,7 +67,7 @@ class SolarCalendar {
       
       if (monthIndex < 13) {
         this.gridEl.classList.remove('leap-layout');
-        const shortPlanets = ["MER", "VEN", "TIE", "MAR", "JUP", "SAT", "URA"];
+        const shortPlanets = ["MER", "VEN", "TER", "MAR", "JUP", "SAT", "URA"];
         this.planets.forEach((p, idx) => {
           const h = document.createElement('div');
           h.className = 'weekday-header';
@@ -186,14 +186,14 @@ class SolarCalendar {
     };
     
     // Previous Leap
-    this.leapTimelineEl.appendChild(createItem(prevLeap, 'PREV'));
+    this.leapTimelineEl.appendChild(createItem(prevLeap, 'PREV MOONDAY'));
     
     // Current Year (Active)
-    const currentLabel = this.isLeapYear(this.year) ? 'LEAP' : 'NO-LEAP';
+    const currentLabel = this.isLeapYear(this.year) ? 'MOONDAY' : 'NO MOONDAY';
     this.leapTimelineEl.appendChild(createItem(this.year, currentLabel, true));
     
     // Next Leap
-    this.leapTimelineEl.appendChild(createItem(nextLeap, 'NEXT'));
+    this.leapTimelineEl.appendChild(createItem(nextLeap, 'NEXT MOONDAY'));
   }
 
   handlePrev() {
