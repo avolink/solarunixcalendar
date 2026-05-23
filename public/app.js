@@ -186,15 +186,21 @@ class SolarCalendar {
   }
 
   handlePrev() {
-    this.currentMonthIndex--;
-    if (this.currentMonthIndex < 0) this.currentMonthIndex = 13;
-    this.render();
+    let index = this.currentMonthIndex - 1;
+    if (index < 0) index = 13;
+    this.setMonth(index);
+    if (window.solarBackground) {
+      window.solarBackground.updateEarthFromDoy(this.selectedDoy);
+    }
   }
 
   handleNext() {
-    this.currentMonthIndex++;
-    if (this.currentMonthIndex > 13) this.currentMonthIndex = 0;
-    this.render();
+    let index = this.currentMonthIndex + 1;
+    if (index > 13) index = 0;
+    this.setMonth(index);
+    if (window.solarBackground) {
+      window.solarBackground.updateEarthFromDoy(this.selectedDoy);
+    }
   }
 
   init() {
