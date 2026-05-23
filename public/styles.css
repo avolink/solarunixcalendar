@@ -302,6 +302,35 @@ body {
   transform: translate(-50%, -50%) rotate(-90deg);
 }
 
+.walkthrough-earth-circle {
+  position: fixed;
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  border: 2px dashed rgba(0, 229, 255, 0.85);
+  box-shadow: 0 0 25px rgba(0, 229, 255, 0.7), inset 0 0 15px rgba(0, 229, 255, 0.3);
+  z-index: 20003;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  animation: pulse-ring 2s infinite ease-in-out;
+  background: rgba(0, 229, 255, 0.08);
+}
+
+@keyframes pulse-ring {
+  0%, 100% {
+    transform: translate(-50%, -50%) scale(1);
+    box-shadow: 0 0 20px rgba(0, 229, 255, 0.5), inset 0 0 10px rgba(0, 229, 255, 0.2);
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.15);
+    box-shadow: 0 0 35px rgba(0, 229, 255, 0.9), inset 0 0 20px rgba(0, 229, 255, 0.55);
+  }
+}
+
+.walkthrough-earth-circle.hidden {
+  display: none !important;
+}
+
 @media (max-width: 768px) {
   .walkthrough-overlay {
     z-index: 999999;

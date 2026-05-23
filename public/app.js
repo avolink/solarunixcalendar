@@ -309,6 +309,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const walkthroughStepTotal = document.getElementById('walkthrough-step-total');
   const walkthroughArrow = document.getElementById('walkthrough-arrow');
   const walkthroughHelpBtn = document.getElementById('walkthrough-help-btn');
+  const walkthroughEarthCircle = document.getElementById('walkthrough-earth-circle');
 
   const steps = [
     {
@@ -358,6 +359,18 @@ document.addEventListener('DOMContentLoaded', () => {
     return { x, y };
   };
 
+  const waitForSolarBackground = (callback, attempts = 0) => {
+    if (window.solarBackground && window.solarBackground.planets && window.solarBackground.planets.length > 0) {
+      callback();
+      return;
+    }
+    if (attempts >= 20) {
+      callback();
+      return;
+    }
+    setTimeout(() => waitForSolarBackground(callback, attempts + 1), 50);
+  };
+
   const setActiveStep = (index) => {
     currentStep = Math.max(0, Math.min(steps.length - 1, index));
     const step = steps[currentStep];
@@ -375,18 +388,27 @@ document.addEventListener('DOMContentLoaded', () => {
       highlightedElement = null;
     }
 
+    if (walkthroughEarthCircle) {
+      walkthroughEarthCircle.classList.add('hidden');
+    }
+
     const target = document.querySelector(step.selector);
     if (target) {
-      target.classList.add('walkthrough-target-highlight');
-      highlightedElement = target;
       if (step.selector === '#solar-system-bg') {
         const earthPos = getEarthScreenPosition();
-        if (earthPos) {
+        if (earthPos && walkthroughEarthCircle) {
+          walkthroughEarthCircle.style.left = `${earthPos.x}px`;
+          walkthroughEarthCircle.style.top = `${earthPos.y}px`;
+          walkthroughEarthCircle.classList.remove('hidden');
           positionArrowAtPoint(earthPos.x, earthPos.y, step.arrow);
         } else {
+          target.classList.add('walkthrough-target-highlight');
+          highlightedElement = target;
           positionArrow(target, step.arrow);
         }
       } else {
+        target.classList.add('walkthrough-target-highlight');
+        highlightedElement = target;
         positionArrow(target, step.arrow);
       }
     } else {
@@ -436,7 +458,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const openWalkthrough = () => {
     walkthroughOverlay.classList.remove('hidden');
     document.body.style.overflow = 'hidden';
-    setActiveStep(0);
+    waitForSolarBackground(() => setActiveStep(0));
   };
 
   const closeWalkthrough = () => {
@@ -445,6 +467,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (highlightedElement) {
       highlightedElement.classList.remove('walkthrough-target-highlight');
       highlightedElement = null;
+    }
+    if (walkthroughEarthCircle) {
+      walkthroughEarthCircle.classList.add('hidden');
     }
     walkthroughArrow.style.display = 'none';
     localStorage.setItem('solarixWalkthroughAlwaysShow', walkthroughAlwaysCheckbox.checked ? 'true' : 'false');
@@ -461,6 +486,12 @@ document.addEventListener('DOMContentLoaded', () => {
   });
   walkthroughHelpBtn.addEventListener('click', () => {
     openWalkthrough();
+  });
+
+  window.addEventListener('resize', () => {
+    if (!walkthroughOverlay.classList.contains('hidden')) {
+      setActiveStep(currentStep);
+    }
   });
 
   const params = new URLSearchParams(window.location.search);
