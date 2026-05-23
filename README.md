@@ -1,0 +1,3 @@
+# KEEP IT SIMPLE, KEEP IT FOREVER...
+
+Documentation and resources for the Solar Unix Calendar open source project.
