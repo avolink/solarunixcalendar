@@ -6,7 +6,7 @@ class SolarBackground {
     this.planets = [
       { name: 'Mercury', relativeOrbit: 0.15, size: 2, speed: 0.04, angle: Math.random() * Math.PI * 2, color: '#444' },
       { name: 'Venus', relativeOrbit: 0.3, size: 4, speed: 0.015, angle: Math.random() * Math.PI * 2, color: '#666' },
-      { name: 'TERRA', relativeOrbit: 0.48, size: 5, speed: 0.01, angle: -Math.PI / 2, color: '#ffffff', draggable: true, hitRadius: 100 },
+      { name: 'TERRA', relativeOrbit: 0.48, size: 5, speed: 0.01, angle: -Math.PI / 2, color: '#7fd8ff', continentColor: '#1f7a56', draggable: true, hitRadius: 100 },
       { name: 'Mars', relativeOrbit: 0.6, size: 3, speed: 0.008, angle: Math.random() * Math.PI * 2, color: '#444' }
     ];
     
@@ -171,13 +171,15 @@ class SolarBackground {
   draw() {
     this.ctx.clearRect(0, 0, this.centerX * 2, this.centerY * 2);
     
+    const desktopScale = window.innerWidth >= 768 ? 1.5 : 1;
+
     // Center Sun
-    const sunRadius = 15 * this.scaleFactor;
+    const sunRadius = 15 * this.scaleFactor * desktopScale;
     this.ctx.beginPath();
     this.ctx.arc(this.centerX, this.centerY, sunRadius, 0, Math.PI * 2);
-    this.ctx.fillStyle = '#111';
+    this.ctx.fillStyle = '#e6c142';
     this.ctx.fill();
-    this.ctx.strokeStyle = '#222';
+    this.ctx.strokeStyle = '#bfa548';
     this.ctx.lineWidth = 1;
     this.ctx.stroke();
 
@@ -197,11 +199,22 @@ class SolarBackground {
       const px = this.centerX + Math.cos(p.angle) * orbitRadius;
       const py = this.centerY + Math.sin(p.angle) * orbitRadius;
       
-      const planetSize = p.size * this.scaleFactor;
+      const planetSize = p.size * this.scaleFactor * (p.draggable && window.innerWidth >= 768 ? 1.5 : 1);
       this.ctx.beginPath();
       this.ctx.arc(px, py, planetSize, 0, Math.PI * 2);
       this.ctx.fillStyle = p.color;
       this.ctx.fill();
+      
+      if (p.name === 'TERRA') {
+        const landSize = planetSize * 0.45;
+        this.ctx.beginPath();
+        this.ctx.fillStyle = p.continentColor || '#1f7a56';
+        this.ctx.moveTo(px - landSize * 0.35, py - landSize * 0.35);
+        this.ctx.bezierCurveTo(px - landSize * 0.25, py - landSize * 0.55, px + landSize * 0.25, py - landSize * 0.4, px + landSize * 0.15, py - landSize * 0.05);
+        this.ctx.bezierCurveTo(px + landSize * 0.05, py + landSize * 0.15, px - landSize * 0.15, py + landSize * 0.25, px - landSize * 0.35, py + landSize * 0.2);
+        this.ctx.bezierCurveTo(px - landSize * 0.5, py + landSize * 0.1, px - landSize * 0.45, py - landSize * 0.2, px - landSize * 0.35, py - landSize * 0.35);
+        this.ctx.fill();
+      }
       
       if (p.draggable) {
         // Drag helper: Subtle line between Sun and Earth
