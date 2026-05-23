@@ -43,8 +43,8 @@ class SolarBackground {
     this.canvas.width = rect.width * dpr;
     this.canvas.height = rect.height * dpr;
     
-    // Logic resolution (for drawing)
-    this.ctx.scale(dpr, dpr);
+    // Reset transform before applying DPR scaling so it does not compound.
+    this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     
     this.centerX = rect.width / 2;
     this.centerY = rect.height / 2;
@@ -79,17 +79,22 @@ class SolarBackground {
     if (e.type === 'touchstart') e.preventDefault();
     const { mx, my } = this.getXY(e);
     
-    // Check if clicking near Earth (the only draggable one)
     const earth = this.planets.find(p => p.draggable);
     const orbitRadius = earth.relativeOrbit * this.baseRadius * this.scaleFactor;
     const ex = Math.cos(earth.angle) * orbitRadius;
     const ey = Math.sin(earth.angle) * orbitRadius;
     
     const hitRadius = (earth.hitRadius || 30) * this.scaleFactor;
-    const dist = Math.sqrt((mx - ex)**2 + (my - ey)**2);
-    if (dist < hitRadius) { // Larger target as requested
+    const dist = Math.sqrt((mx - ex) ** 2 + (my - ey) ** 2);
+    const clickRadius = Math.sqrt(mx * mx + my * my);
+    const orbitTolerance = 18 * this.scaleFactor;
+    const orbitDistance = Math.abs(clickRadius - orbitRadius);
+
+    if (dist < hitRadius || orbitDistance < orbitTolerance) {
       this.isDragging = true;
       this.dragTarget = earth;
+      const clickedAngle = Math.atan2(my, mx);
+      this.updateCalendarFromAngle(clickedAngle, true);
     }
   }
 
@@ -164,7 +169,7 @@ class SolarBackground {
   }
 
   draw() {
-    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    this.ctx.clearRect(0, 0, this.centerX * 2, this.centerY * 2);
     
     // Center Sun
     const sunRadius = 15 * this.scaleFactor;
@@ -215,14 +220,16 @@ class SolarBackground {
         this.ctx.stroke();
         this.ctx.restore();
         
-        // Large hit area guide (Subtle dash circle)
-        this.ctx.beginPath();
-        this.ctx.arc(px, py, (p.hitRadius || 30) * this.scaleFactor, 0, Math.PI * 2);
-        this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.04)';
-        this.ctx.setLineDash([5, 12]);
-        this.ctx.lineWidth = 1;
-        this.ctx.stroke();
-        this.ctx.setLineDash([]);
+        if (this.isDragging) {
+          // Large hit area guide when actively dragging earth
+          this.ctx.beginPath();
+          this.ctx.arc(px, py, (p.hitRadius || 30) * this.scaleFactor, 0, Math.PI * 2);
+          this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+          this.ctx.setLineDash([5, 12]);
+          this.ctx.lineWidth = 1;
+          this.ctx.stroke();
+          this.ctx.setLineDash([]);
+        }
       }
     });
   }
