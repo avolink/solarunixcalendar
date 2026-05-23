@@ -31,7 +31,30 @@
   <link rel="icon" href="favicon.png" type="image/png">
 </head>
 <body>
-  <a class="download-icon-btn" href="solar_unix_calendar.pdf" download="solar_unix_calendar.pdf" aria-label="Download project documentation" style="position: absolute; top: 15px; right: 15px; width: 48px; height: 48px; display: inline-flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.12); border-radius: 14px; color: #ffffff; text-decoration: none; box-shadow: 0 16px 40px rgba(0,0,0,0.18);">
+  <div id="walkthrough-overlay" class="walkthrough-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="walkthrough-title" aria-describedby="walkthrough-description">
+    <div class="walkthrough-backdrop"></div>
+    <div id="walkthrough-arrow" class="walkthrough-arrow" aria-hidden="true"></div>
+    <div class="walkthrough-card" role="document">
+      <button id="walkthrough-close" class="walkthrough-close" aria-label="Close walkthrough">×</button>
+      <h2 id="walkthrough-title">Welcome to Solarix</h2>
+      <div id="walkthrough-description">
+        <p>Follow these steps to learn the first interactive controls in Solarix.</p>
+      </div>
+      <div class="walkthrough-checkbox">
+        <label>
+          <input id="walkthrough-always-show" type="checkbox" checked>
+          Always display this guide when loading the page
+        </label>
+      </div>
+      <div class="walkthrough-actions">
+        <button id="walkthrough-prev" class="walkthrough-secondary" type="button">Back</button>
+        <button id="walkthrough-next" class="walkthrough-action" type="button">Next</button>
+      </div>
+      <div class="walkthrough-step-indicator"><span id="walkthrough-step-number">1</span> / <span id="walkthrough-step-total">5</span></div>
+    </div>
+  </div>
+  <button id="walkthrough-help-btn" class="walkthrough-help-btn" aria-label="Open walkthrough">?</button>
+  <a class="download-icon-btn" href="solar_unix_calendar.pdf" download="solar_unix_calendar.pdf" aria-label="Download project documentation" style="position: fixed; top: 15px; right: 15px; width: 48px; height: 48px; display: inline-flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.12); border-radius: 14px; color: #ffffff; text-decoration: none; box-shadow: 0 16px 40px rgba(0,0,0,0.18); z-index: 9999;">
     <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
       <path d="M12 3v12"></path>
       <polyline points="8 11 12 15 16 11"></polyline>

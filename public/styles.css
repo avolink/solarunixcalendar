@@ -108,7 +108,245 @@ body {
   z-index: 9999;
 }
 
+.walkthrough-help-btn {
+  position: fixed;
+  top: 15px;
+  left: 15px;
+  width: 46px;
+  height: 46px;
+  border: none;
+  border-radius: 18px;
+  background: rgba(0, 229, 255, 0.18);
+  color: #050505;
+  font-size: 1.4rem;
+  font-weight: 800;
+  cursor: pointer;
+  z-index: 10001;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.22);
+  transition: transform 180ms ease, background 180ms ease, box-shadow 180ms ease;
+}
+
+.walkthrough-help-btn:hover,
+.walkthrough-help-btn:focus {
+  transform: translateY(-2px);
+  background: rgba(0, 229, 255, 0.28);
+  outline: none;
+}
+
+.walkthrough-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 20000;
+  pointer-events: auto;
+}
+
+.walkthrough-overlay.hidden {
+  display: none;
+}
+
+.walkthrough-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.82);
+  backdrop-filter: blur(3px);
+  z-index: 20001;
+}
+
+.walkthrough-card {
+  position: relative;
+  width: min(100%, 540px);
+  background: rgba(12, 12, 12, 0.98);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 24px;
+  padding: 32px;
+  box-shadow: 0 32px 90px rgba(0, 0, 0, 0.35);
+  z-index: 20002;
+  pointer-events: auto;
+}
+
+.walkthrough-card h2 {
+  margin: 0 0 16px;
+  font-size: 2rem;
+  color: #ffffff;
+}
+
+.walkthrough-card p {
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1.75;
+}
+
+.walkthrough-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.walkthrough-action,
+.walkthrough-secondary {
+  border-radius: 14px;
+  padding: 14px 18px;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+}
+
+.walkthrough-action {
+  background: #00e5ff;
+  color: #050505;
+}
+
+.walkthrough-action:hover {
+  background: #56f4ff;
+}
+
+.walkthrough-secondary {
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.walkthrough-checkbox {
+  margin-top: 18px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.95rem;
+}
+
+.walkthrough-checkbox input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: #00e5ff;
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  border-radius: 4px;
+}
+
+.walkthrough-step-indicator {
+  margin-top: 14px;
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.66);
+  text-align: right;
+}
+
+.walkthrough-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  border: none;
+  background: transparent;
+  color: #ffffff;
+  font-size: 1.5rem;
+  cursor: pointer;
+  z-index: 10003;
+}
+
+.walkthrough-target-highlight {
+  position: relative;
+  z-index: 20003 !important;
+  box-shadow: 0 0 0 4px rgba(0, 229, 255, 0.32), 0 0 40px rgba(0, 229, 255, 0.16);
+  border-radius: 18px;
+}
+
+.walkthrough-arrow {
+  position: fixed;
+  width: 48px;
+  height: 48px;
+  z-index: 20004;
+  pointer-events: none;
+}
+
+.walkthrough-arrow::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.22);
+  box-shadow: 0 0 36px rgba(255, 255, 255, 0.35);
+}
+
+.walkthrough-arrow::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 0;
+  height: 0;
+  border: 14px solid transparent;
+  transform: translate(-50%, -50%);
+}
+
+.walkthrough-arrow.down::after {
+  border-top-color: #ffffff;
+  top: 100%;
+  transform: translate(-50%, -50%) rotate(180deg);
+}
+
+.walkthrough-arrow.up::after {
+  border-bottom-color: #ffffff;
+  top: 0;
+}
+
+.walkthrough-arrow.left::after {
+  border-right-color: #ffffff;
+  left: 0;
+  transform: translate(-50%, -50%) rotate(90deg);
+}
+
+.walkthrough-arrow.right::after {
+  border-left-color: #ffffff;
+  left: 100%;
+  transform: translate(-50%, -50%) rotate(-90deg);
+}
+
 @media (max-width: 768px) {
+  .walkthrough-overlay {
+    z-index: 999999;
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+  }
+
+  .walkthrough-backdrop {
+    background: rgba(0, 0, 0, 0.92);
+  }
+
+  .walkthrough-card {
+    position: fixed;
+    top: 12vh;
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(92%, 520px);
+    padding: 24px;
+    margin: 0;
+    max-height: 76vh;
+    overflow-y: auto;
+  }
+
+  .walkthrough-help-btn {
+    width: 40px;
+    height: 40px;
+    font-size: 1.1rem;
+  }
+
+  .walkthrough-arrow {
+    z-index: 999999;
+  }
+}
+
+@media (max-width: 1024px) {
+  .download-icon-btn {
+    width: 38px !important;
+    height: 38px !important;
+  }
+  .download-icon-btn svg {
+    width: 18px !important;
+    height: 18px !important;
+  }
   .download-icon-btn {
     width: 38px !important;
     height: 38px !important;
