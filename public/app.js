@@ -86,12 +86,16 @@ class SolarCalendar {
       for (let i = 3; i <= 28; i++) {
         this.createEmptyCell();
       }
-      
-      this.renderLeapTimeline();
     }
     
+    // Always render the Leap Timeline so it has a consistent layout height in the DOM
+    this.renderLeapTimeline();
+    
+    // Toggle visibility instead of display: none to keep the grid perfectly static across months
     if (monthIndex < 13) {
-      this.leapTimelineEl.style.display = 'none';
+      this.leapTimelineEl.style.visibility = 'hidden';
+    } else {
+      this.leapTimelineEl.style.visibility = 'visible';
     }
   }
 
