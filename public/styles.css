@@ -91,6 +91,34 @@ body {
   padding: 0;
 }
 
+.download-icon-btn {
+  position: fixed;
+  top: 15px;
+  right: 15px;
+  width: 48px;
+  height: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255,255,255,0.12);
+  border-radius: 14px;
+  color: #ffffff;
+  text-decoration: none;
+  box-shadow: 0 16px 40px rgba(0,0,0,0.18);
+  z-index: 9999;
+}
+
+@media (max-width: 768px) {
+  .download-icon-btn {
+    width: 38px !important;
+    height: 38px !important;
+  }
+  .download-icon-btn svg {
+    width: 18px !important;
+    height: 18px !important;
+  }
+}
+
 @media (max-width: 1024px) {
   .app-wrapper {
     flex-direction: column;
