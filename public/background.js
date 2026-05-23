@@ -14,6 +14,13 @@ class SolarBackground {
     this.isDragging = false;
     this.totalSteps = 366; // Increased resolution to days
     
+    // Load SVG vectors for Sun and Earth
+    this.sunImage = new Image();
+    this.sunImage.src = 'index_files/sun-vector.svg';
+    
+    this.earthImage = new Image();
+    this.earthImage.src = 'index_files/earth-globe-vector.svg';
+    
     this.init();
   }
 
@@ -173,15 +180,66 @@ class SolarBackground {
     
     const desktopScale = window.innerWidth >= 768 ? 1.5 : 1;
 
-    // Center Sun
-    const sunRadius = 15 * this.scaleFactor * desktopScale;
-    this.ctx.beginPath();
-    this.ctx.arc(this.centerX, this.centerY, sunRadius, 0, Math.PI * 2);
-    this.ctx.fillStyle = '#e6c142';
-    this.ctx.fill();
-    this.ctx.strokeStyle = '#bfa548';
-    this.ctx.lineWidth = 1;
-    this.ctx.stroke();
+    // Calculate Mercury's orbit radius to establish a dynamic size limit for the Sun
+    const mercury = this.planets.find(p => p.name === 'Mercury');
+    const mercuryOrbitRadius = mercury ? mercury.relativeOrbit * this.baseRadius * this.scaleFactor : 999;
+
+    // Center Sun (Increase base size by 70% from 22 to 37 for gorgeous visual presence)
+    let sunRadius = (this.sunImage.complete && this.sunImage.naturalWidth !== 0 ? 37 : 15) * this.scaleFactor * desktopScale;
+    
+    // Dynamic safety cap: Ensure the Sun leaves a nice visual clearance and never covers Mercury's orbit
+    const maxSunRadius = mercuryOrbitRadius * 0.82;
+    if (sunRadius > maxSunRadius) {
+      sunRadius = maxSunRadius;
+    }
+    
+    // Draw a gorgeous soft celestial golden halo behind the Sun
+    if (this.sunImage.complete && this.sunImage.naturalWidth !== 0) {
+      const sunGlowRadius = sunRadius * 2.2;
+      const gradient = this.ctx.createRadialGradient(
+        this.centerX, this.centerY, sunRadius * 0.3,
+        this.centerX, this.centerY, sunGlowRadius
+      );
+      gradient.addColorStop(0, 'rgba(255, 220, 100, 0.25)');
+      gradient.addColorStop(0.3, 'rgba(255, 190, 60, 0.12)');
+      gradient.addColorStop(1, 'rgba(255, 190, 60, 0)');
+      
+      this.ctx.beginPath();
+      this.ctx.arc(this.centerX, this.centerY, sunGlowRadius, 0, Math.PI * 2);
+      this.ctx.fillStyle = gradient;
+      this.ctx.fill();
+
+      // Draw SVG Sun (Preserving original aspect ratio to keep it circular)
+      const imgWidth = this.sunImage.naturalWidth;
+      const imgHeight = this.sunImage.naturalHeight;
+      const aspectRatio = imgWidth / imgHeight;
+      
+      let drawWidth, drawHeight;
+      if (aspectRatio >= 1) {
+        drawWidth = sunRadius * 2;
+        drawHeight = drawWidth / aspectRatio;
+      } else {
+        drawHeight = sunRadius * 2;
+        drawWidth = drawHeight * aspectRatio;
+      }
+      
+      this.ctx.drawImage(
+        this.sunImage,
+        this.centerX - drawWidth / 2,
+        this.centerY - drawHeight / 2,
+        drawWidth,
+        drawHeight
+      );
+    } else {
+      // Fallback Sun
+      this.ctx.beginPath();
+      this.ctx.arc(this.centerX, this.centerY, sunRadius, 0, Math.PI * 2);
+      this.ctx.fillStyle = '#e6c142';
+      this.ctx.fill();
+      this.ctx.strokeStyle = '#bfa548';
+      this.ctx.lineWidth = 1;
+      this.ctx.stroke();
+    }
 
     // Orbits and Planets
     this.planets.forEach(p => {
@@ -200,19 +258,60 @@ class SolarBackground {
       const py = this.centerY + Math.sin(p.angle) * orbitRadius;
       
       const planetSize = p.size * this.scaleFactor * (p.draggable && window.innerWidth >= 768 ? 1.5 : 1);
-      this.ctx.beginPath();
-      this.ctx.arc(px, py, planetSize, 0, Math.PI * 2);
-      this.ctx.fillStyle = p.color;
-      this.ctx.fill();
       
       if (p.name === 'TERRA') {
-        const landSize = planetSize * 0.45;
+        if (this.earthImage.complete && this.earthImage.naturalWidth !== 0) {
+          // Draw a soft, beautiful atmospheric cyan glow behind Earth
+          this.ctx.save();
+          this.ctx.shadowBlur = 15 * this.scaleFactor;
+          this.ctx.shadowColor = 'rgba(0, 229, 255, 0.45)';
+          
+          // Make the Earth slightly larger to see the globe detail clearly
+          const earthRenderSize = planetSize * 2.2;
+          
+          // Preserving original Earth aspect ratio
+          const imgWidth = this.earthImage.naturalWidth;
+          const imgHeight = this.earthImage.naturalHeight;
+          const aspectRatio = imgWidth / imgHeight;
+          
+          let drawWidth, drawHeight;
+          if (aspectRatio >= 1) {
+            drawWidth = earthRenderSize * 2;
+            drawHeight = drawWidth / aspectRatio;
+          } else {
+            drawHeight = earthRenderSize * 2;
+            drawWidth = drawHeight * aspectRatio;
+          }
+          
+          this.ctx.drawImage(
+            this.earthImage,
+            px - drawWidth / 2,
+            py - drawHeight / 2,
+            drawWidth,
+            drawHeight
+          );
+          this.ctx.restore();
+        } else {
+          // Fallback to original drawing
+          this.ctx.beginPath();
+          this.ctx.arc(px, py, planetSize, 0, Math.PI * 2);
+          this.ctx.fillStyle = p.color;
+          this.ctx.fill();
+          
+          const landSize = planetSize * 0.45;
+          this.ctx.beginPath();
+          this.ctx.fillStyle = p.continentColor || '#1f7a56';
+          this.ctx.moveTo(px - landSize * 0.35, py - landSize * 0.35);
+          this.ctx.bezierCurveTo(px - landSize * 0.25, py - landSize * 0.55, px + landSize * 0.25, py - landSize * 0.4, px + landSize * 0.15, py - landSize * 0.05);
+          this.ctx.bezierCurveTo(px + landSize * 0.05, py + landSize * 0.15, px - landSize * 0.15, py + landSize * 0.25, px - landSize * 0.35, py + landSize * 0.2);
+          this.ctx.bezierCurveTo(px - landSize * 0.5, py + landSize * 0.1, px - landSize * 0.45, py - landSize * 0.2, px - landSize * 0.35, py - landSize * 0.35);
+          this.ctx.fill();
+        }
+      } else {
+        // Other planets
         this.ctx.beginPath();
-        this.ctx.fillStyle = p.continentColor || '#1f7a56';
-        this.ctx.moveTo(px - landSize * 0.35, py - landSize * 0.35);
-        this.ctx.bezierCurveTo(px - landSize * 0.25, py - landSize * 0.55, px + landSize * 0.25, py - landSize * 0.4, px + landSize * 0.15, py - landSize * 0.05);
-        this.ctx.bezierCurveTo(px + landSize * 0.05, py + landSize * 0.15, px - landSize * 0.15, py + landSize * 0.25, px - landSize * 0.35, py + landSize * 0.2);
-        this.ctx.bezierCurveTo(px - landSize * 0.5, py + landSize * 0.1, px - landSize * 0.45, py - landSize * 0.2, px - landSize * 0.35, py - landSize * 0.35);
+        this.ctx.arc(px, py, planetSize, 0, Math.PI * 2);
+        this.ctx.fillStyle = p.color;
         this.ctx.fill();
       }
       
@@ -224,12 +323,14 @@ class SolarBackground {
         this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
         this.ctx.stroke();
 
-        // Subtle glow for interactive Earth
+        // Subtle glow ring for interactive Earth
         this.ctx.save();
         this.ctx.shadowBlur = 10 * this.scaleFactor;
         this.ctx.shadowColor = p.color;
         this.ctx.beginPath();
-        this.ctx.arc(px, py, planetSize, 0, Math.PI * 2);
+        const glowSize = this.earthImage.complete && this.earthImage.naturalWidth !== 0 ? planetSize * 2.2 : planetSize;
+        this.ctx.arc(px, py, glowSize, 0, Math.PI * 2);
+        this.ctx.strokeStyle = this.earthImage.complete && this.earthImage.naturalWidth !== 0 ? 'rgba(0, 229, 255, 0.2)' : p.color;
         this.ctx.stroke();
         this.ctx.restore();
         
