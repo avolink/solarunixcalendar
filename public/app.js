@@ -100,7 +100,7 @@ class SolarCalendar {
     cell.className = 'day-cell empty-cell';
     cell.style.cursor = 'default';
     cell.style.pointerEvents = 'none';
-    cell.style.opacity = '0.07';
+    cell.style.backgroundColor = 'var(--bg-color)';
     this.gridEl.appendChild(cell);
   }
 
