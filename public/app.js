@@ -58,38 +58,34 @@ class SolarCalendar {
     
     this.gridEl.innerHTML = '';
     
+    // Always use the standard 7-column matrix size
+    this.gridEl.classList.remove('leap-layout');
+    
+    const shortPlanets = ["MER", "VEN", "TER", "MAR", "JUP", "SAT", "URA"];
+    this.planets.forEach((p, idx) => {
+      const h = document.createElement('div');
+      h.className = 'weekday-header';
+      h.innerHTML = `
+        <span class="full-name">${p}</span>
+        <span class="short-name">${shortPlanets[idx]}</span>
+      `;
+      this.gridEl.appendChild(h);
+    });
+    
     if (monthIndex < 13) {
-      this.gridEl.classList.remove('leap-layout');
-      const shortPlanets = ["MER", "VEN", "TER", "MAR", "JUP", "SAT", "URA"];
-      this.planets.forEach((p, idx) => {
-        const h = document.createElement('div');
-        h.className = 'weekday-header';
-        h.innerHTML = `
-          <span class="full-name">${p}</span>
-          <span class="short-name">${shortPlanets[idx]}</span>
-        `;
-        this.gridEl.appendChild(h);
-      });
-      
       const startDoy = monthIndex * 28 + 1;
       for (let i = 1; i <= 28; i++) {
         const doy = startDoy + i - 1;
         this.createDayCell(i, doy);
       }
     } else {
-      this.gridEl.classList.add('leap-layout');
-      this.leapDays.forEach(d => {
-        const h = document.createElement('div');
-        h.className = 'weekday-header';
-        h.innerHTML = `
-          <span class="full-name">${d}</span>
-          <span class="short-name">${d.substring(0, 3).toUpperCase()}</span>
-        `;
-        this.gridEl.appendChild(h);
-      });
-      
+      // Leap Month: Render the 2 leap days in the first slots, then fill the matrix (26 empty cells)
       this.createDayCell(365, 365);
       this.createDayCell(366, 366);
+      
+      for (let i = 3; i <= 28; i++) {
+        this.createEmptyCell();
+      }
       
       this.renderLeapTimeline();
     }
@@ -97,6 +93,15 @@ class SolarCalendar {
     if (monthIndex < 13) {
       this.leapTimelineEl.style.display = 'none';
     }
+  }
+
+  createEmptyCell() {
+    const cell = document.createElement('div');
+    cell.className = 'day-cell empty-cell';
+    cell.style.cursor = 'default';
+    cell.style.pointerEvents = 'none';
+    cell.style.opacity = '0.07';
+    this.gridEl.appendChild(cell);
   }
 
   createDayCell(solarDay, doy) {
